@@ -1,6 +1,6 @@
 # js-rosetree
 
-Set of utilities for creating and manipulating Rosetrees.
+Set of utilities for creating and manipulating Rosetrees. Inspired by [zwilias/elm-rosetree](https://package.elm-lang.org/packages/zwilias/elm-rosetree/latest)
 
 ## What are Rosetrees?
 
