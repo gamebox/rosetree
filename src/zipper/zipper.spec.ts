@@ -359,4 +359,22 @@ describe("Zipper module", () => {
       ).toEqual(6);
     });
   });
+
+  describe("exec", () => {
+    it("should work correctly when every move returns a zipper", () => {
+      expect(
+        Zipper.label(Zipper.exec(baseZipper, [Zipper.forward, Zipper.forward])!)
+      ).toEqual("c");
+    });
+
+    it("should work correctly when a move returns undefined", () => {
+      expect(
+        Zipper.exec(baseZipper, [
+          Zipper.forward,
+          Zipper.forward,
+          Zipper.forward,
+        ])
+      ).toBeUndefined();
+    });
+  });
 });

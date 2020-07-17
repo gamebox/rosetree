@@ -14,6 +14,7 @@ export interface Zipper<T> {
 }
 
 type LabelMapper<T> = (label: T, level: number, rootIsFocus: boolean) => string;
+type ZipperAction<T> = (zipper: Zipper<T>) => Zipper<T> | undefined;
 
 const Crumb = <T>(
   label: T,
@@ -345,6 +346,42 @@ export const display = <T>(
   ].join("\n");
   const allCrumbs = [...z.crumbs.slice().reverse(), currentLevelDisplay];
   return crumbDisplay(allCrumbs[0], allCrumbs.slice(1), 0, labelMapper);
+};
+
+// Utilities
+
+export const exec = <T>(
+  zipper: Zipper<T>,
+  moves: ReadonlyArray<ZipperAction<T>>
+): Zipper<T> | undefined => {
+  if (moves.length === 0) {
+    return zipper;
+  } else {
+    const [move, ...rest] = moves;
+    const newZip = move(zipper);
+    if (newZip !== undefined) {
+      return exec(newZip, rest);
+    } else {
+      return undefined;
+    }
+  }
+};
+
+export const curried = {
+  mapTree: <T>(fn: (tree: Tree.Tree<T>) => Tree.Tree<T>) => (z: Zipper<T>) =>
+    mapTree(fn, z),
+  replaceTree: <T>(tree: Tree.Tree<T>) => (z: Zipper<T>) =>
+    replaceTree(tree, z),
+  mapLabel: <T>(fn: (label: T) => T) => (z: Zipper<T>) => mapLabel(fn, z),
+  replaceLabel: <T>(label: T) => (z: Zipper<T>) => replaceLabel(label, z),
+  prepend: <T>(tree: Tree.Tree<T>) => (z: Zipper<T>) => prepend(tree, z),
+  append: <T>(tree: Tree.Tree<T>) => (z: Zipper<T>) => append(tree, z),
+  findNext: <T>(pred: (label: T) => Boolean) => (z: Zipper<T>) =>
+    findNext(pred, z),
+  findPrevious: <T>(pred: (label: T) => Boolean) => (z: Zipper<T>) =>
+    findPrevious(pred, z),
+  findFromRoot: <T>(pred: (label: T) => Boolean) => (z: Zipper<T>) =>
+    findFromRoot(pred, z),
 };
 
 // Internal functions
